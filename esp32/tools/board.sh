@@ -35,6 +35,8 @@
 #              ESP32-S3-DevKitC-1 v1.1 N8R8 (status LED, no display)
 #   waveshare-c6-lcd-147
 #              Waveshare ESP32-C6-LCD-1.47 with a 172x320 status screen
+#   waveshare-c6-touch-147
+#              Waveshare ESP32-C6-Touch-LCD-1.47: Wi-Fi radar (presence.read), no screen yet
 #   waveshare-s3-epaper-154
 #              Waveshare ESP32-S3-1.54inch-ePaper V2 with a 200x200 e-paper
 #
@@ -42,7 +44,7 @@
 # matching serial port, if there is exactly one.
 set -euo pipefail
 
-usage() { sed -n '16,40p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
+usage() { sed -n '16,42p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
 
 [ $# -ge 1 ] || usage 2
 case "$1" in -h|--help) usage ;; esac
@@ -62,6 +64,13 @@ case "$BOARD" in
   c6-nopsram)
     TARGET=esp32c6
     DEFAULTS="$DEFAULTS;devices/sdkconfig.c6-nopsram"
+    PORTS="/dev/cu.usbmodem* /dev/ttyACM*"
+    ;;
+  waveshare-c6-touch-147)
+    TARGET=esp32c6
+    # The C6's memory tuning first, then this board's pins and its radar.
+    DEFAULTS="$DEFAULTS;devices/sdkconfig.c6-nopsram;devices/sdkconfig.$BOARD"
+    # The C6's own USB-Serial-JTAG.
     PORTS="/dev/cu.usbmodem* /dev/ttyACM*"
     ;;
   ideaspark|sensecap-indicator)

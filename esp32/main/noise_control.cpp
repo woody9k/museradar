@@ -1405,6 +1405,17 @@ static char *build_register_json(void) {
                 "in seconds; a sensor with no recent reading is null.",
                 nullptr, nullptr);
 #endif
+#if CONFIG_HOMEHUB_PRESENCE_CSI
+    add_command(commands, "presence.read",
+                "Wi-Fi radar: sense whether anyone is moving in the room the "
+                "gadget is in, from disturbance of the Wi-Fi signal (no camera "
+                "or microphone). Returns presence (true if motion was seen in "
+                "the last hold_s seconds), motion (0 to 1, the current level), "
+                "last_motion_s (null if none since the gadget came online) and "
+                "the raw activity and floor statistics. Needs Wi-Fi up, and a "
+                "few seconds after connecting before it can answer.",
+                nullptr, nullptr);
+#endif
 
 #if CONFIG_MUSE_WATCHER_CAMERA
     add_command(commands, "camera.capture",

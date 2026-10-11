@@ -95,6 +95,9 @@ endif()
 if(CONFIG_HOMEHUB_RETERMINAL_SHT4X)
     list(APPEND GADGET_SRCS "reterminal_sht4x.c")
 endif()
+if(CONFIG_HOMEHUB_PRESENCE_CSI)
+    list(APPEND GADGET_SRCS "presence_csi.c")
+endif()
 
 if(CONFIG_HOMEHUB_VOICE)
     list(APPEND GADGET_SRCS

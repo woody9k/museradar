@@ -71,6 +71,9 @@
 #if CONFIG_HOMEHUB_RETERMINAL_SHT4X
 #include "reterminal_sht4x.h"
 #endif
+#if CONFIG_HOMEHUB_PRESENCE_CSI
+#include "presence_csi.h"
+#endif
 #if CONFIG_MUSE_WATCHER_CAMERA
 #include "boards/watcher_camera.h"
 #endif
@@ -1910,6 +1913,11 @@ static cJSON *on_ws_command(
         return reterminal_sht4x_command();
     }
 #endif
+#if CONFIG_HOMEHUB_PRESENCE_CSI
+    if (strcmp(command, "presence.read") == 0) {
+        return presence_csi_command();
+    }
+#endif
     if (strcmp(command, "device.reset_vm") == 0) {
         return queue_ws_control(WS_CONTROL_RESET_VM, NULL);
     }
@@ -2642,6 +2650,9 @@ void app_run(void) {
 #if CONFIG_HOMEHUB_RETERMINAL_SHT4X
     reterminal_sht4x_init();
 #endif
+#if CONFIG_HOMEHUB_PRESENCE_CSI
+    presence_csi_init();
+#endif
 
     if (!setup_complete) {
         // Unpaired devices advertise automatically — no button press is needed
@@ -2828,6 +2839,11 @@ void app_run(void) {
                  (unsigned long)(tun.tx_bytes - prev_tun.tx_bytes),
                  (unsigned long)(tun.tx_dropped - prev_tun.tx_dropped));
         prev_tun = tun;
+#if CONFIG_HOMEHUB_PRESENCE_CSI
+        char presence_line[128];
+        presence_csi_status(presence_line, sizeof(presence_line));
+        ESP_LOGI(HEARTBEAT_TAG, "%s", presence_line);
+#endif
         stack_monitor_record(&stack);
 #if CONFIG_MUSE_ENABLED
         muse_heartbeat_pause();

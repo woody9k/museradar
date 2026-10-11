@@ -315,6 +315,45 @@ menu "ESP32 Device SDK"
             tenths of a degree Celsius. The onboard sensor reads warm from
             board heat; -33 (-3.3 C, about -6 F) is a starting point.
 
+    config HOMEHUB_PRESENCE_CSI
+        bool "Wi-Fi radar: motion and presence from CSI (presence.read)"
+        depends on SOC_WIFI_CSI_SUPPORT
+        select ESP_WIFI_CSI_ENABLED
+        default n
+        help
+            Sense motion in the room from the Wi-Fi channel state information
+            (CSI) of the access point's frames, and answer presence.read with
+            whether anyone has moved recently and the current motion level.
+            While Wi-Fi is up the board pings its gateway to keep frames
+            coming. Needs no extra hardware; costs about 16 KB of RAM for the
+            CSI buffers and a 4 KB task. A board with no light or screen can
+            run this as its whole job.
+
+    config HOMEHUB_PRESENCE_CSI_PING_MS
+        int "Wi-Fi radar: gateway ping interval, in milliseconds"
+        depends on HOMEHUB_PRESENCE_CSI
+        range 20 2000
+        default 100
+        help
+            How often to ping the gateway while sensing. Each reply is one
+            CSI sample; the access point's beacons add about ten a second.
+
+    config HOMEHUB_PRESENCE_CSI_HOLD_S
+        int "Wi-Fi radar: seconds presence stays true after the last motion"
+        depends on HOMEHUB_PRESENCE_CSI
+        range 1 3600
+        default 30
+
+    config HOMEHUB_PRESENCE_CSI_SCALE_MILLI
+        int "Wi-Fi radar: activity above the quiet floor that means full motion, in thousandths"
+        depends on HOMEHUB_PRESENCE_CSI
+        range 5 1000
+        default 80
+        help
+            The motion level is the activity above the tracked quiet-room
+            floor divided by this. Lower it if walking past barely registers;
+            raise it if an empty room shows motion.
+
     config HOMEHUB_DISPLAY_COMMANDS
         bool
         default y if HOMEHUB_DISPLAY
